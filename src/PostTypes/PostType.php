@@ -24,12 +24,14 @@ final class PostType
     private static array $registry = [];
 
     private bool          $isPublic    = false;
+    /** @var array<string> */
     private array         $supports    = [ 'title', 'editor' ];
     private string|bool   $rewrite     = true;
     private string        $menuIcon    = 'dashicons-admin-post';
     private bool          $hasArchive  = false;
     private bool          $showInRest  = true;
-    private string        $menuPosition = '';
+    private ?int          $menuPosition = null;
+    /** @var array<string, mixed> */
     private array         $extraArgs   = [];
 
     private function __construct(
@@ -92,6 +94,13 @@ final class PostType
         return $this;
     }
 
+    public function menuPosition(int $position): static
+    {
+        $this->menuPosition = $position;
+        return $this;
+    }
+
+    /** @param array<string, mixed> $args */
     public function args(array $args): static
     {
         $this->extraArgs = $args;
@@ -119,6 +128,7 @@ final class PostType
 
     // ─── Private ──────────────────────────────────────────────────────────────
 
+    /** @return array<string, mixed> */
     private function buildArgs(): array
     {
         $singular = $this->singular;
@@ -151,8 +161,9 @@ final class PostType
             'show_in_rest' => $this->showInRest,
             'supports'     => $this->supports,
             'rewrite'      => $rewrite,
-            'menu_icon'    => $this->menuIcon,
-            'has_archive'  => $this->hasArchive,
+            'menu_icon'     => $this->menuIcon,
+            'has_archive'   => $this->hasArchive,
+            'menu_position' => $this->menuPosition,
         ];
 
         return array_merge($defaults, $this->extraArgs);

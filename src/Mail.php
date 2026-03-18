@@ -116,6 +116,7 @@ final class Mail
 
     // ─── Private ──────────────────────────────────────────────────────────────
 
+    /** @return list<string> */
     private function buildHeaders(): array
     {
         $headers = [];

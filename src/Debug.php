@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace UupCode\Utilities;
 
+use UupCode\Utilities\Logging\Log;
+
 /**
  * Development debugging utilities — dump, dd, backtrace, and timers.
  *

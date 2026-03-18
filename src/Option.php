@@ -76,6 +76,10 @@ final class Option
         return filter_var($value, FILTER_VALIDATE_BOOLEAN);
     }
 
+    /**
+     * @param  array<mixed> $default
+     * @return array<mixed>
+     */
     public static function array(string $key, array $default = []): array
     {
         $value = get_option($key, $default);

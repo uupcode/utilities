@@ -46,7 +46,10 @@ class BaseRequest
         return Request::bool($key, $default);
     }
 
-    /** @return list<string> */
+    /**
+     * @param  array<string> $default
+     * @return list<string>
+     */
     public function array(string $key, array $default = []): array
     {
         return Request::array($key, $default);

@@ -137,6 +137,7 @@ final class DB
      *   DB::statement('CREATE INDEX ...');
      *   DB::statement('SET SESSION group_concat_max_len = %d', [100000]);
      */
+    /** @param array<mixed> $bindings */
     public static function statement(string $sql, array $bindings = []): bool
     {
         $db      = self::wpdb();
@@ -148,6 +149,10 @@ final class DB
      * Run a raw SELECT and return all rows as objects.
      *
      *   DB::select('SELECT * FROM wp_posts WHERE ID IN (%d, %d)', [1, 2]);
+     */
+    /**
+     * @param  array<mixed>  $bindings
+     * @return list<object>
      */
     public static function select(string $sql, array $bindings = []): array
     {
@@ -161,6 +166,7 @@ final class DB
      *
      *   DB::selectOne('SELECT option_value FROM wp_options WHERE option_name = %s', ['siteurl']);
      */
+    /** @param array<mixed> $bindings */
     public static function selectOne(string $sql, array $bindings = []): ?object
     {
         return self::select($sql, $bindings)[0] ?? null;
@@ -171,6 +177,7 @@ final class DB
      *
      *   $count = DB::scalar('SELECT COUNT(*) FROM wp_posts WHERE post_status = %s', ['publish']);
      */
+    /** @param array<mixed> $bindings */
     public static function scalar(string $sql, array $bindings = []): mixed
     {
         $db       = self::wpdb();
@@ -203,6 +210,7 @@ final class DB
      */
     public static function getQueryLog(): array
     {
+        // @phpstan-ignore-next-line
         return self::wpdb()->queries ?? [];
     }
 

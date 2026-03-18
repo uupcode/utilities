@@ -77,7 +77,7 @@ final class HttpResponse
             return array_change_key_case($this->headers, CASE_LOWER);
         }
         // Requests_Utility_CaseInsensitiveDictionary or similar object.
-        if (is_object($this->headers) && method_exists($this->headers, 'getAll')) {
+        if (method_exists($this->headers, 'getAll')) {
             return array_change_key_case($this->headers->getAll(), CASE_LOWER);
         }
         return [];

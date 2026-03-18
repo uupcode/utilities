@@ -90,7 +90,7 @@ final class Plugin
             require_once ABSPATH . 'wp-admin/includes/plugin.php';
         }
         $data = get_plugin_data(self::$file, false, false);
-        return (string) ($data['Version'] ?? '');
+        return $data['Version'];
     }
 
     /**

@@ -68,6 +68,9 @@ final class AjaxHandler
     private ?string $nonceAction = null;
     private ?string $nonceField  = '_wpnonce';
 
+    /**
+     * @param \Closure|array<mixed>|string $callback
+     */
     public function __construct(
         private readonly string   $action,
         private readonly \Closure|array|string $callback,
@@ -118,27 +121,27 @@ final class AjaxHandler
 
     private function buildCallback(): \Closure
     {
-        $innerCallback = $this->callback;
-        $fluentNonce   = $this->nonceAction;
-        $requestClass  = $this->resolveRequestClass();
+        $innerCallback  = $this->callback;
+        $fluentNonce    = $this->nonceAction;
+        $fluentNonceField = $this->nonceField;
+        $requestClass   = $this->resolveRequestClass();
 
-        return static function () use ($innerCallback, $fluentNonce, $requestClass): void {
+        return static function () use ($innerCallback, $fluentNonce, $fluentNonceField, $requestClass): void {
             $request = new $requestClass();
 
             // Request class nonce takes precedence over fluent .nonce() config.
             $nonceAction = $request->nonceAction() !== '' ? $request->nonceAction() : $fluentNonce;
+            $nonceField  = $request->nonceField() !== '' ? $request->nonceField() : ($fluentNonceField ?? '_wpnonce');
 
             if ($nonceAction !== null && $nonceAction !== '') {
-                $nonce = sanitize_text_field((string) ($_REQUEST[ $request->nonceField() ] ?? ''));
+                $nonce = sanitize_text_field((string) ($_REQUEST[ $nonceField ] ?? ''));
                 if (! wp_verify_nonce($nonce, $nonceAction)) {
                     wp_send_json_error([ 'message' => 'Invalid nonce.' ], 403);
-                    return;
                 }
             }
 
             if (! $request->authorize()) {
                 wp_send_json_error([ 'message' => 'Unauthorized.' ], 403);
-                return;
             }
 
             ($innerCallback)($request);

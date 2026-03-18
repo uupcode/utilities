@@ -88,6 +88,7 @@ final class Request
     /**
      * Return an array from the request, sanitizing each element as a string.
      *
+     * @param  array<string> $default
      * @return list<string>
      */
     public static function array(string $key, array $default = []): array

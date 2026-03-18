@@ -25,8 +25,12 @@ final class Taxonomy
     private string|bool  $rewrite        = true;
     private bool         $showInRest     = true;
     private bool         $showAdminCol   = false;
+    /** @var array<string, mixed> */
     private array        $extraArgs      = [];
 
+    /**
+     * @param string|array<string> $postTypes
+     */
     private function __construct(
         private readonly string $slug,
         private readonly string $singular,
@@ -84,6 +88,7 @@ final class Taxonomy
         return $this;
     }
 
+    /** @param array<string, mixed> $args */
     public function args(array $args): static
     {
         $this->extraArgs = $args;
@@ -110,6 +115,7 @@ final class Taxonomy
 
     // ─── Private ──────────────────────────────────────────────────────────────
 
+    /** @return array<string, mixed> */
     private function buildArgs(): array
     {
         $singular = $this->singular;

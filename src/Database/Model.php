@@ -71,6 +71,7 @@ abstract class Model
 
     // ─── Built-in query methods ───────────────────────────────────────────────
 
+    /** @return list<object> */
     public static function all(): array
     {
         return static::hydrate(static::query()->get());
@@ -105,7 +106,7 @@ abstract class Model
         return $row;
     }
 
-    private static function castValue(mixed $value, string $type): mixed
+    protected static function castValue(mixed $value, string $type): mixed
     {
         return match ($type) {
             'array'  => is_array($value) ? $value : (array) json_decode((string) $value, true),

@@ -26,26 +26,31 @@ final class Rest
     private static array $routes = [];
     private static bool  $hooked = false;
 
+    /** @param callable|array<mixed> $callback */
     public static function get(string $namespace, string $route, callable|array $callback): RestRoute
     {
         return self::add($namespace, $route, 'GET', $callback);
     }
 
+    /** @param callable|array<mixed> $callback */
     public static function post(string $namespace, string $route, callable|array $callback): RestRoute
     {
         return self::add($namespace, $route, 'POST', $callback);
     }
 
+    /** @param callable|array<mixed> $callback */
     public static function put(string $namespace, string $route, callable|array $callback): RestRoute
     {
         return self::add($namespace, $route, 'PUT', $callback);
     }
 
+    /** @param callable|array<mixed> $callback */
     public static function patch(string $namespace, string $route, callable|array $callback): RestRoute
     {
         return self::add($namespace, $route, 'PATCH', $callback);
     }
 
+    /** @param callable|array<mixed> $callback */
     public static function delete(string $namespace, string $route, callable|array $callback): RestRoute
     {
         return self::add($namespace, $route, 'DELETE', $callback);
@@ -53,6 +58,9 @@ final class Rest
 
     // ─── Private ──────────────────────────────────────────────────────────────
 
+    /**
+     * @param callable|array<mixed> $callback
+     */
     private static function add(
         string         $namespace,
         string         $route,

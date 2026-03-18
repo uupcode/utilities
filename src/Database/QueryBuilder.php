@@ -47,7 +47,7 @@ namespace UupCode\Utilities\Database;
  *      ->offset(20)
  *      ->get();
  */
-class QueryBuilder
+final class QueryBuilder
 {
     // ─── Allowed operators (whitelist prevents injection via operator param) ──
 
@@ -191,6 +191,8 @@ class QueryBuilder
      *   ->where('comment_count', '>', 5)           // col op val
      *   ->where(['post_type' => 'post', 'status' => 'publish'])  // array shorthand
      *   ->where(function ($q) { $q->where(...)->orWhere(...); }) // nested group
+     *
+     * @param array<string, mixed>|\Closure|string $column
      */
     public function where(string|array|\Closure $column, mixed $operatorOrValue = null, mixed $value = null, string $boolean = 'AND'): static
     {
@@ -232,13 +234,21 @@ class QueryBuilder
         return $this;
     }
 
-    /** OR WHERE. */
+    /**
+     * OR WHERE.
+     *
+     * @param array<string, mixed>|\Closure|string $column
+     */
     public function orWhere(string|array|\Closure $column, mixed $operatorOrValue = null, mixed $value = null): static
     {
         return $this->where($column, $operatorOrValue, $value, 'OR');
     }
 
-    /** Raw WHERE condition — bindings are passed to $wpdb->prepare(). */
+    /**
+     * Raw WHERE condition — bindings are passed to $wpdb->prepare().
+     *
+     * @param array<mixed> $bindings
+     */
     public function whereRaw(string $sql, array $bindings = [], string $boolean = 'AND'): static
     {
         $this->wheres[] = [
@@ -248,6 +258,7 @@ class QueryBuilder
         return $this;
     }
 
+    /** @param array<mixed> $bindings */
     public function orWhereRaw(string $sql, array $bindings = []): static
     {
         return $this->whereRaw($sql, $bindings, 'OR');
@@ -258,6 +269,7 @@ class QueryBuilder
      *
      *   ->whereIn('ID', [1, 2, 3])
      */
+    /** @param array<mixed> $values */
     public function whereIn(string $column, array $values, string $boolean = 'AND', bool $not = false): static
     {
         $operator = $not ? 'NOT IN' : 'IN';
@@ -279,16 +291,19 @@ class QueryBuilder
         return $this;
     }
 
+    /** @param array<mixed> $values */
     public function whereNotIn(string $column, array $values, string $boolean = 'AND'): static
     {
         return $this->whereIn($column, $values, $boolean, true);
     }
 
+    /** @param array<mixed> $values */
     public function orWhereIn(string $column, array $values): static
     {
         return $this->whereIn($column, $values, 'OR');
     }
 
+    /** @param array<mixed> $values */
     public function orWhereNotIn(string $column, array $values): static
     {
         return $this->whereNotIn($column, $values, 'OR');
@@ -422,7 +437,11 @@ class QueryBuilder
         return $this;
     }
 
-    /** Raw HAVING — bindings go through prepare(). */
+    /**
+     * Raw HAVING — bindings go through prepare().
+     *
+     * @param array<mixed> $bindings
+     */
     public function havingRaw(string $sql, array $bindings = [], string $boolean = 'AND'): static
     {
         $this->havings[] = [
@@ -566,6 +585,7 @@ class QueryBuilder
      *   ->pluck('post_title')                      // ['Hello', 'World']
      *   ->pluck('post_title', 'ID')                // [5 => 'Hello', 6 => 'World']
      */
+    /** @return array<mixed> */
     public function pluck(string $column, ?string $key = null): array
     {
         $rows = $key ? $this->select($column, $key)->get() : $this->select($column)->get();
@@ -661,6 +681,7 @@ class QueryBuilder
      *
      *   DB::table('posts')->insert(['post_title' => 'Hello', 'post_status' => 'publish']);
      */
+    /** @param array<string, mixed> $data */
     public function insert(array $data): int|false
     {
         $result = $this->db->insert($this->from, $data);
@@ -678,6 +699,7 @@ class QueryBuilder
      *       ['post_id' => 2, 'meta_key' => '_featured', 'meta_value' => '0'],
      *   ]);
      */
+    /** @param array<int, array<string, mixed>> $rows */
     public function insertBatch(array $rows): int
     {
         if (empty($rows)) {
@@ -721,6 +743,7 @@ class QueryBuilder
      *   DB::table('posts')->where('ID', 5)->update(['post_status' => 'draft']);
      *   DB::table('posts')->where('ID', 5)->update(['views' => DB::raw('views + 1')]);
      */
+    /** @param array<string, mixed> $data */
     public function update(array $data): int
     {
         $setValues  = [];
@@ -760,6 +783,10 @@ class QueryBuilder
      *       ['option_name' => 'my_key'],
      *       ['option_value' => 'new_value']
      *   );
+     */
+    /**
+     * @param array<string, mixed> $attributes
+     * @param array<string, mixed> $values
      */
     public function updateOrInsert(array $attributes, array $values): bool
     {
@@ -830,7 +857,7 @@ class QueryBuilder
     /** Return a fresh builder sharing this one's DB connection. */
     public function newQuery(): static
     {
-        return new static($this->db);
+        return new self($this->db);
     }
 
     // ═══════════════════════════════════════════════════════════════════════════

@@ -10,8 +10,10 @@ namespace UupCode\Utilities\Http;
 final class RestRoute
 {
     private mixed $permissionCallback = null;
-    private array     $schema             = [];
-    private array     $extraArgs          = [];
+    /** @var array<string, mixed> */
+    private array $schema    = [];
+    /** @var array<string, mixed> */
+    private array $extraArgs = [];
 
     public function __construct(
         private readonly string            $namespace,
@@ -32,6 +34,8 @@ final class RestRoute
 
     /**
      * Define the JSON schema for request args validation.
+     *
+     * @param array<string, mixed> $schema
      */
     public function schema(array $schema): static
     {
@@ -41,6 +45,8 @@ final class RestRoute
 
     /**
      * Merge additional raw args into the route definition.
+     *
+     * @param array<string, mixed> $args
      */
     public function args(array $args): static
     {
@@ -50,6 +56,8 @@ final class RestRoute
 
     /**
      * Build the args array for register_rest_route().
+     *
+     * @return array<string, mixed>
      */
     public function toArgs(): array
     {
