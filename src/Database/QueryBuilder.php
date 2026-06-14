@@ -770,7 +770,7 @@ final class QueryBuilder
 
         $where = $this->compileWheres();
         if ($where !== '') {
-            $sql .= ' WHERE 1=1 ' . $where;
+            $sql .= ' WHERE ' . $where;
         }
 
         return (int) $this->db->query($sql);
@@ -814,7 +814,7 @@ final class QueryBuilder
         $where = $this->compileWheres();
 
         if ($where !== '') {
-            $sql .= ' WHERE 1=1 ' . $where;
+            $sql .= ' WHERE ' . $where;
         }
 
         return (int) $this->db->query($sql);
@@ -875,7 +875,7 @@ final class QueryBuilder
 
         $where = $this->compileWheres();
         if ($where !== '') {
-            $sql .= ' WHERE 1=1 ' . $where;
+            $sql .= ' WHERE ' . $where;
         }
 
         if ($this->groups) {
@@ -903,9 +903,10 @@ final class QueryBuilder
     }
 
     /**
-     * Compile all WHERE conditions into a single SQL string.
-     * Each entry was already run through prepare() when added.
-     * We just join them with their AND/OR boolean prefix.
+     * Compile all WHERE conditions into a single SQL string (no leading boolean).
+     * Each entry was already run through prepare() when added. The first condition
+     * drops its AND/OR prefix so the result is valid both at the top level and inside
+     * a nested group "(…)" — otherwise a group would compile to "(AND … OR …)".
      */
     private function compileWheres(): string
     {
@@ -913,8 +914,8 @@ final class QueryBuilder
             return '';
         }
         $parts = [];
-        foreach ($this->wheres as $w) {
-            $parts[] = "{$w['boolean']} {$w['sql']}";
+        foreach ($this->wheres as $i => $w) {
+            $parts[] = ($i === 0 ? '' : $w['boolean'] . ' ') . $w['sql'];
         }
         return implode(' ', $parts);
     }

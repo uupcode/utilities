@@ -1,7 +1,7 @@
 {
     "name": "uupcode/utilities",
     "description": "Fluent, expressive utilities for WordPress plugin development — DB, hooks, AJAX, REST,\n   assets, logging, caching, meta, post types, cron and more.",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "type": "library",
     "license": "GPL-3.0-or-later",
     "require": {

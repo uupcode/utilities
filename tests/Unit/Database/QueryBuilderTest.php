@@ -69,6 +69,29 @@ final class QueryBuilderTest extends TestCase
         $this->assertStringContainsString('>', $sql);
     }
 
+    public function testWhereClauseHasNoOnePaddingOrLeadingBoolean(): void
+    {
+        $sql = $this->qb->table('posts')->where('post_status', 'publish')->toSql();
+        $this->assertStringNotContainsString('1=1', $sql);
+        $this->assertStringNotContainsString('WHERE AND', $sql);
+    }
+
+    public function testNestedWhereClosureProducesValidGroup(): void
+    {
+        $sql = $this->qb->table('posts')
+            ->where('post_status', 'publish')
+            ->where(function ($q): void {
+                $q->whereNull('post_parent')->orWhere('menu_order', '>', 0);
+            })
+            ->toSql();
+
+        // The group must not start with a dangling boolean: "(AND …)" is invalid SQL.
+        $this->assertStringNotContainsString('(AND', $sql);
+        // Top-level conditions are still joined with AND, and the group has its OR.
+        $this->assertStringContainsString('AND (', $sql);
+        $this->assertStringContainsString('OR', $sql);
+    }
+
     public function testWhereNull(): void
     {
         $sql = $this->qb->table('posts')->whereNull('post_parent')->toSql();
